@@ -1,65 +1,159 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useState, useEffect } from 'react';
+import { supabase } from './supabase';
+
+interface LocalMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export default function ChatComponent() {
+  const [messages, setMessages] = useState<LocalMessage[]>([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [attachedText, setAttachedText] = useState('');
+  const [fileName, setFileName] = useState('');
+
+  useEffect(() => {
+    async function loadChatHistory() {
+      const { data, error } = await supabase
+        .from('chat_history')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('Error loading history:', error.message);
+      } else if (data) {
+        setMessages(data as LocalMessage[]);
+      }
+    }
+    loadChatHistory();
+  }, []);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      setAttachedText(text);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if ((!input.trim() && !attachedText) || loading) return;
+
+    let fullPrompt = input;
+    if (attachedText) {
+      fullPrompt = `[Uploaded File: ${fileName}]\nFile Contents:\n${attachedText}\n\nUser Question: ${input || 'Analyze this file contents.'}`;
+    }
+
+    const currentText = fullPrompt;
+    setInput('');
+    setAttachedText('');
+    setFileName('');
+    setLoading(true);
+
+    const tempUserMsg: LocalMessage = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: currentText,
+    };
+    setMessages((prev) => [...prev, tempUserMsg]);
+
+    await supabase.from('chat_history').insert([{ role: 'user', content: currentText }]);
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [...messages, tempUserMsg] }),
+      });
+
+      const data = await response.json();
+      
+      if (data.text) {
+        setMessages((prev) => [
+          ...prev,
+          { id: (Date.now() + 1).toString(), role: 'assistant', content: data.text },
+        ]);
+        await supabase.from('chat_history').insert([{ role: 'assistant', content: data.text }]);
+      }
+    } catch (error) {
+      console.error('Error fetching chat response:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex flex-col w-full max-w-4xl mx-auto h-screen py-6 px-4 bg-[#09090b] text-zinc-100 antialiased font-sans">
+      
+      {/* App Header */}
+      <div className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-4">
+        <div className="flex items-center gap-3">
+          <div className="h-3 w-3 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_12px_rgba(34,211,238,0.5)]" />
+          <h1 className="text-sm font-semibold tracking-wider uppercase text-zinc-400">Obsidian AI Engine v1.0</h1>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="text-xs text-zinc-500 font-mono bg-zinc-950 px-2.5 py-1 border border-zinc-800 rounded-md">
+          SYSTEM STATUS: ONLINE
         </div>
-      </main>
+      </div>
+      
+      {/* Workspace Terminal View */}
+      <div className="flex-1 overflow-y-auto space-y-6 mb-4 p-4 border border-zinc-800/80 rounded-2xl bg-[#0c0c0e] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
+        {messages.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-full text-center mt-12">
+            <span className="text-3xl mb-3 opacity-50">⚡</span>
+            <p className="text-zinc-500 text-sm max-w-sm leading-relaxed">
+              Workspace initialized. Upload a text or code document or type a query below to prompt the neural model.
+            </p>
+          </div>
+        )}
+        {messages.map((m) => (
+          <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-md leading-relaxed ${
+              m.role === 'user' 
+                ? 'bg-zinc-900 border border-zinc-700/50 text-zinc-100 font-medium' 
+                : 'bg-zinc-950 border border-cyan-950/60 text-zinc-300 shadow-[0_0_15px_rgba(0,0,0,0.2)]'
+            }`}>
+              <span className={`font-mono block text-[10px] uppercase tracking-widest mb-1.5 opacity-60 ${
+                m.role === 'user' ? 'text-zinc-400' : 'text-cyan-400'
+              }`}>
+                {m.role === 'user' ? '■ CORE_USER' : '◆ ASSISTANT_LOGIC'}
+              </span>
+              <p className="whitespace-pre-wrap font-mono text-xs">{m.content}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* File Attachment Status Indicator */}
+      {fileName && (
+        <div className="mb-3 p-2.5 bg-cyan-950/30 border border-cyan-800/50 rounded-xl text-xs text-cyan-400 flex justify-between items-center shadow-[0_0_10px_rgba(34,211,238,0.05)]">
+          <span className="flex items-center gap-2 font-mono">📎 ATTACHED_NODE: <strong>{fileName}</strong></span>
+          <button onClick={() => { setFileName(''); setAttachedText(''); }} className="hover:text-cyan-200 bg-cyan-900/30 p-1 rounded-md border border-cyan-700/30">✕</button>
+        </div>
+      )}
+
+      {/* User Input Entry Dock */}
+      <form onSubmit={handleSubmit} className="flex gap-2 bg-[#0c0c0e] p-2 border border-zinc-800 rounded-xl shadow-xl items-center focus-within:border-cyan-500/40 transition-colors duration-300">
+        <label className="cursor-pointer p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-cyan-400" title="Attach file">
+          <span className="text-lg">📎</span>
+          <input type="file" accept=".txt,.js,.ts,.tsx,.json,.csv,.md" className="hidden" onChange={handleFileUpload} disabled={loading} />
+        </label>
+        <input className="flex-1 px-2 py-2 text-xs font-mono text-zinc-200 outline-none bg-transparent placeholder-zinc-600" value={input} placeholder={fileName ? "Input variables regarding this file..." : "Compile a new query script or attach file..."} onChange={(e) => setInput(e.target.value)} disabled={loading} />
+        <button type="submit" disabled={loading || (!input.trim() && !attachedText)} className="bg-zinc-100 text-zinc-950 text-xs font-mono font-bold px-4 py-2.5 rounded-lg hover:bg-zinc-200 active:scale-95 transition-all duration-200 disabled:opacity-20 disabled:pointer-events-none shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+          {loading ? 'RUNNING...' : 'EXECUTE'}
+        </button>
+      </form>
+      
     </div>
   );
 }
