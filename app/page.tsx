@@ -46,27 +46,28 @@ export default function ChatComponent() {
     reader.readAsText(file);
   };
 
- // Updated function to reliably clear all history logs
-  const handleClearHistory = async () => {
+ const handleClearHistory = async () => {
     if (messages.length === 0) return;
     const confirmClear = window.confirm("Are you sure you want to clear your conversation context history?");
     if (!confirmClear) return;
 
+    setLoading(true);
     try {
-      // Direct global target row cleanup
-      const { error } = await supabase
-        .from('chat_history')
-        .delete()
-        .filter('id', 'not.is', null);
+      // Trigger our secure backend deletion serverless function
+      const response = await fetch('/api/clear', { method: 'POST' });
+      const data = await response.json();
 
-      if (error) {
-        console.error('Database error:', error.message);
-        alert("Failed to clear database logs. Check your database connection.");
-      } else {
+      if (data.success) {
+        // Clear frontend message array view instantly
         setMessages([]);
+      } else {
+        alert("Server failed to clear tables: " + (data.error || "Unknown Error"));
       }
     } catch (err) {
-      console.error(err);
+      console.error('Fetch error tracking clear route:', err);
+      alert("Network communication error clearing server context logs.");
+    } finally {
+      setLoading(false);
     }
   };
 
