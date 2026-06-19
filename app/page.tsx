@@ -201,7 +201,7 @@ export default function ChatComponent() {
       )}
 
       {/* User Input Entry Dock */}
-      <form onSubmit={handleSubmit} className="flex gap-2 bg-[#0c0c0e] p-2 border border-zinc-800 rounded-xl shadow-xl items-center focus-within:border-cyan-500/40 transition-colors duration-300">
+     <form onSubmit={handleSubmit} className="w-full flex items-center gap-2 bg-[#0E131F]/90 backdrop-blur-md p-2 md:p-3 border border-slate-800/80 rounded-xl md:rounded-2xl shadow-xl focus-within:border-cyan-500/40 transition-all">
         <label className="cursor-pointer p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-cyan-400" title="Attach file">
           <span className="text-lg">📎</span>
           <input type="file" accept=".txt,.js,.ts,.tsx,.json,.csv,.md" className="hidden" onChange={handleFileUpload} disabled={loading} />
