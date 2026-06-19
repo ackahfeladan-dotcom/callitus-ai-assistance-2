@@ -1,14 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-// Initialize a privileged direct database connection
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from '@/app/supabase';
 
 export async function POST() {
   try {
-    // Execute an unconditional direct cloud truncate via table targeting
+    // Execute global target row cleanup using your working client config
     const { error } = await supabase
       .from('chat_history')
       .delete()
