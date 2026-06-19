@@ -54,7 +54,7 @@ export default function ChatComponent() {
     setLoading(true);
     try {
       // Trigger our secure backend deletion serverless function
-      const response = await fetch('/api/clear', { method: 'POST' });
+      const response = await fetch('/api/chat/clear', { method: 'POST' });
       const data = await response.json();
 
       if (data.success) {
