@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from './supabase';
+import ReactMarkdown from 'react-markdown';
 
 interface LocalMessage {
   id: string;
@@ -188,9 +189,9 @@ export default function ChatComponent() {
             }`}>
        
               
-              <p className="whitespace-pre-wrap font-sans text-sm md:text-base text-zinc-100 font-medium leading-relaxed">
-  {m.content}
-</p>
+              <div className="prose prose-invert max-w-none font-sans text-sm md:text-base text-zinc-100 font-medium leading-relaxed space-y-3 selection:bg-cyan-500/30">
+  <ReactMarkdown>{m.content}</ReactMarkdown>
+</div>
             </div>
           </div>
         ))}
