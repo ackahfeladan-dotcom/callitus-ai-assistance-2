@@ -18,6 +18,11 @@ export default function ChatComponent() {
   const [loading, setLoading] = useState(false);
   const [attachedText, setAttachedText] = useState('');
   const [fileName, setFileName] = useState('');
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   // 1. Verify User Session State on window startup
   useEffect(() => {
@@ -210,7 +215,7 @@ export default function ChatComponent() {
           {loading ? 'RUNNING...' : 'EXECUTE'}
         </button>
       </form>
-      
+      <div ref={messagesEndRef} />
     </div>
   );
 }
