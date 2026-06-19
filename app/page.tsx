@@ -46,24 +46,27 @@ export default function ChatComponent() {
     reader.readAsText(file);
   };
 
-  // NEW: Function to clear chat messages from both UI and Database
+ // Updated function to reliably clear all history logs
   const handleClearHistory = async () => {
     if (messages.length === 0) return;
     const confirmClear = window.confirm("Are you sure you want to clear your conversation context history?");
     if (!confirmClear) return;
 
-    // 1. Delete all rows from Supabase chat_history table
-    const { error } = await supabase
-      .from('chat_history')
-      .delete()
-      .neq('role', 'system'); // Deletes everything smoothly
+    try {
+      // Direct global target row cleanup
+      const { error } = await supabase
+        .from('chat_history')
+        .delete()
+        .filter('id', 'not.is', null);
 
-    if (error) {
-      console.error('Error clearing database history:', error.message);
-      alert("Failed to clear database logs. Check your RLS policy.");
-    } else {
-      // 2. Wipe frontend array state to clean layout
-      setMessages([]);
+      if (error) {
+        console.error('Database error:', error.message);
+        alert("Failed to clear database logs. Check your database connection.");
+      } else {
+        setMessages([]);
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
