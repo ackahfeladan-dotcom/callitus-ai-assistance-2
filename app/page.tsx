@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from './supabase';
 
 interface LocalMessage {
@@ -10,14 +11,27 @@ interface LocalMessage {
 }
 
 export default function ChatComponent() {
+  const router = useRouter();
+  const [userChecked, setUserChecked] = useState(false);
   const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [attachedText, setAttachedText] = useState('');
   const [fileName, setFileName] = useState('');
 
-  // Fetch history from Supabase on mount
+  // 1. Verify User Session State on window startup
   useEffect(() => {
+    async function checkUserSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        router.push('/login'); // Boot unauthenticated requests to login terminal
+      } else {
+        setUserChecked(true); // Grant dashboard execution permission
+        loadChatHistory();
+      }
+    }
+
     async function loadChatHistory() {
       const { data, error } = await supabase
         .from('chat_history')
@@ -30,8 +44,9 @@ export default function ChatComponent() {
         setMessages(data as LocalMessage[]);
       }
     }
-    loadChatHistory();
-  }, []);
+
+    checkUserSession();
+  }, [router]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -46,29 +61,29 @@ export default function ChatComponent() {
     reader.readAsText(file);
   };
 
- const handleClearHistory = async () => {
+  const handleClearHistory = async () => {
     if (messages.length === 0) return;
     const confirmClear = window.confirm("Are you sure you want to clear your conversation context history?");
     if (!confirmClear) return;
 
     setLoading(true);
     try {
-      // Trigger our secure backend deletion serverless function
       const response = await fetch('/api/chat/clear', { method: 'POST' });
       const data = await response.json();
-
       if (data.success) {
-        // Clear frontend message array view instantly
         setMessages([]);
-      } else {
-        alert("Server failed to clear tables: " + (data.error || "Unknown Error"));
       }
     } catch (err) {
-      console.error('Fetch error tracking clear route:', err);
-      alert("Network communication error clearing server context logs.");
+      console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  // NEW: Secure user sign-out session termination logic
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,32 +127,37 @@ export default function ChatComponent() {
         await supabase.from('chat_history').insert([{ role: 'assistant', content: data.text }]);
       }
     } catch (error) {
-      console.error('Error fetching chat response:', error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
+  // Prevent flashing design layers while check resolves
+  if (!userChecked) {
+    return <div className="min-h-screen bg-[#09090b] flex items-center justify-center text-xs font-mono text-zinc-500">SYNCHRONIZING_SESSION...</div>;
+  }
+
   return (
     <div className="flex flex-col w-full max-w-4xl mx-auto h-screen py-6 px-4 bg-[#09090b] text-zinc-100 antialiased font-sans">
       
-      {/* App Header Banner */}
+      {/* App Header */}
       <div className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-4">
         <div className="flex items-center gap-3">
           <div className="h-3 w-3 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_12px_rgba(34,211,238,0.5)]" />
           <h1 className="text-sm font-semibold tracking-wider uppercase text-zinc-400">Obsidian AI Engine v1.0</h1>
         </div>
         
-        {/* NEW: Interactive Action Dock (Clear Button & Status) */}
+        {/* Action Panel Holder (Wipe Button, Logout Button, and Status Gauge) */}
         <div className="flex items-center gap-2">
           {messages.length > 0 && (
-            <button 
-              onClick={handleClearHistory}
-              className="text-[10px] font-mono font-bold uppercase tracking-wider text-red-400 hover:text-red-300 border border-red-950 bg-red-950/20 px-2.5 py-1 rounded-md transition duration-200"
-            >
+            <button onClick={handleClearHistory} className="text-[10px] font-mono font-bold uppercase tracking-wider text-red-400 hover:text-red-300 border border-red-950 bg-red-950/20 px-2.5 py-1 rounded-md transition duration-200">
               WIPE CONTEXT
             </button>
           )}
+          <button onClick={handleLogout} className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 hover:text-zinc-200 border border-zinc-800 bg-zinc-900/40 px-2.5 py-1 rounded-md transition duration-200">
+            DISCONNECT
+          </button>
           <div className="text-xs text-zinc-500 font-mono bg-zinc-950 px-2.5 py-1 border border-zinc-800 rounded-md">
             SYSTEM STATUS: ONLINE
           </div>
