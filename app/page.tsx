@@ -181,12 +181,15 @@ export default function ChatComponent() {
                 ? 'bg-zinc-900 border border-zinc-700/50 text-zinc-100 font-medium' 
                 : 'bg-zinc-950 border border-cyan-950/60 text-zinc-300 shadow-[0_0_15px_rgba(0,0,0,0.2)]'
             }`}>
-              <span className={`font-mono block text-[10px] uppercase tracking-widest mb-1.5 opacity-60 ${
-                m.role === 'user' ? 'text-zinc-400' : 'text-cyan-400'
-              }`}>
-                {m.role === 'user' ? '■ CORE_USER' : '◆ ASSISTANT_LOGIC'}
+             <span className={`font-mono text-xs font-bold tracking-widest uppercase mb-1.5 block ${
+  m.role === 'user' ? 'text-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.3)]' : 'text-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]'
+}`}>
+  {m.role === 'user' ? '⚡ CORE_USER' : '✨ ASSISTANT_LOGIC'}
+
               </span>
-              <p className="whitespace-pre-wrap font-mono text-xs">{m.content}</p>
+              <p className="whitespace-pre-wrap font-sans text-sm md:text-base text-zinc-100 font-medium leading-relaxed">
+  {m.content}
+</p>
             </div>
           </div>
         ))}
