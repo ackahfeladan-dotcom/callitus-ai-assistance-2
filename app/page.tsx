@@ -16,6 +16,7 @@ export default function ChatComponent() {
   const [attachedText, setAttachedText] = useState('');
   const [fileName, setFileName] = useState('');
 
+  // Fetch history from Supabase on mount
   useEffect(() => {
     async function loadChatHistory() {
       const { data, error } = await supabase
@@ -43,6 +44,27 @@ export default function ChatComponent() {
       setAttachedText(text);
     };
     reader.readAsText(file);
+  };
+
+  // NEW: Function to clear chat messages from both UI and Database
+  const handleClearHistory = async () => {
+    if (messages.length === 0) return;
+    const confirmClear = window.confirm("Are you sure you want to clear your conversation context history?");
+    if (!confirmClear) return;
+
+    // 1. Delete all rows from Supabase chat_history table
+    const { error } = await supabase
+      .from('chat_history')
+      .delete()
+      .neq('role', 'system'); // Deletes everything smoothly
+
+    if (error) {
+      console.error('Error clearing database history:', error.message);
+      alert("Failed to clear database logs. Check your RLS policy.");
+    } else {
+      // 2. Wipe frontend array state to clean layout
+      setMessages([]);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -95,14 +117,26 @@ export default function ChatComponent() {
   return (
     <div className="flex flex-col w-full max-w-4xl mx-auto h-screen py-6 px-4 bg-[#09090b] text-zinc-100 antialiased font-sans">
       
-      {/* App Header */}
+      {/* App Header Banner */}
       <div className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-4">
         <div className="flex items-center gap-3">
           <div className="h-3 w-3 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_12px_rgba(34,211,238,0.5)]" />
           <h1 className="text-sm font-semibold tracking-wider uppercase text-zinc-400">Obsidian AI Engine v1.0</h1>
         </div>
-        <div className="text-xs text-zinc-500 font-mono bg-zinc-950 px-2.5 py-1 border border-zinc-800 rounded-md">
-          SYSTEM STATUS: ONLINE
+        
+        {/* NEW: Interactive Action Dock (Clear Button & Status) */}
+        <div className="flex items-center gap-2">
+          {messages.length > 0 && (
+            <button 
+              onClick={handleClearHistory}
+              className="text-[10px] font-mono font-bold uppercase tracking-wider text-red-400 hover:text-red-300 border border-red-950 bg-red-950/20 px-2.5 py-1 rounded-md transition duration-200"
+            >
+              WIPE CONTEXT
+            </button>
+          )}
+          <div className="text-xs text-zinc-500 font-mono bg-zinc-950 px-2.5 py-1 border border-zinc-800 rounded-md">
+            SYSTEM STATUS: ONLINE
+          </div>
         </div>
       </div>
       
