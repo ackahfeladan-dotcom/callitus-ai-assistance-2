@@ -139,7 +139,7 @@ export default function ChatComponent() {
   }
 
   return (
-    <div className="flex flex-col w-full max-w-4xl mx-auto h-screen py-6 px-4 bg-[#09090b] text-zinc-100 antialiased font-sans">
+  <div className="flex flex-col w-full min-h-screen bg-[#09090b] text-zinc-100 p-4 md:p-6 font-sans select-none antialiased">
       
       {/* App Header */}
       <div className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-4">
