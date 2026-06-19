@@ -1,13 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
-    // Will ignore strict TypeScript production check errors
+    // Ignores strict TypeScript compilation errors on build
     ignoreBuildErrors: true,
   },
+  // Modern configuration parameter for Next.js to ignore ESLint blocks on build
   eslint: {
-    // Will ignore strict lint analysis check warnings during build
     ignoreDuringBuilds: true,
-  },
+  }
 };
 
 export default nextConfig;
