@@ -174,7 +174,7 @@ export default function ChatComponent() {
           {/* NEW CHAT BUTTON */}
           <button 
             onClick={() => {
-              /* Optional: Add clear script action here */
+              setMessages([]);
               setIsSidebarOpen(false);
             }}
             aria-label="New chat"
