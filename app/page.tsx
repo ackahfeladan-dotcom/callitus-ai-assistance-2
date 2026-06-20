@@ -20,6 +20,8 @@ export default function ChatComponent() {
   const [attachedText, setAttachedText] = useState('');
   const [fileName, setFileName] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -186,10 +188,37 @@ export default function ChatComponent() {
 
           {/* MAIN NAV ITEM LIST (CLEAN TECH ICONS) */}
           <nav className="space-y-0.5 text-sm font-normal text-zinc-300">
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group">
-              <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <span>Search chats</span>
-            </button>
+           {/* SEARCH CHATS TOGGLE & INPUT AREA */}
+            {!isSearching ? (
+              <button 
+                onClick={() => setIsSearching(true)}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group"
+              >
+                <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span>Search chats</span>
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 px-2 py-1.5 bg-[#171717] border border-zinc-800/60 rounded-lg mx-1 my-0.5">
+                <svg className="text-zinc-400 shrink-0" xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input 
+                  type="text"
+                  placeholder="Filter histories..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-transparent text-xs text-zinc-200 outline-none placeholder-zinc-500"
+                  autoFocus
+                />
+                <button 
+                  onClick={() => {
+                    setIsSearching(false);
+                    setSearchQuery('');
+                  }}
+                  className="text-zinc-500 hover:text-zinc-300 text-xs px-1"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
             
             <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group">
               <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
@@ -218,9 +247,22 @@ export default function ChatComponent() {
               <span>Recent Chats</span>
               <svg xmlns="http://w3.org" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </div>
+           {/* DYNAMIC SEARCH FILTER MAP */}
             <div className="mt-3 text-xs text-zinc-400 space-y-2.5">
-              <p className="hover:text-zinc-200 cursor-pointer truncate pl-0.5">Obsidian System Workspace Initialization</p>
-              <p className="hover:text-zinc-200 cursor-pointer truncate pl-0.5">Database User Session Management</p>
+              {[
+                "Obsidian System Workspace Initialization",
+                "Database User Session Management"
+              ]
+                .filter(title => title.toLowerCase().includes(searchQuery.toLowerCase()))
+                .map((title, idx) => (
+                  <p key={idx} className="hover:text-zinc-200 cursor-pointer truncate pl-0.5">
+                    {title}
+                  </p>
+                ))}
+              
+              {searchQuery && ["Obsidian System Workspace Initialization", "Database User Session Management"].filter(title => title.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                <p className="text-zinc-600 italic pl-0.5 text-[11px]">No results found</p>
+              )}
             </div>
           </div>
         </div>
