@@ -144,34 +144,22 @@ export default function ChatComponent() {
   if (!userChecked) {
     return <div className="min-h-screen bg-[#09090b] flex items-center justify-center text-xs font-mono text-zinc-500">SYNCHRONIZING_SESSION...</div>;
   }
-  {/* Collapsible Sidebar Overlay */}
-  <div 
-    className={`fixed top-0 left-0 z-50 h-screen w-64 bg-[#111926] border-r border-zinc-800 p-4 transition-transform duration-300 ease-in-out ${
-      isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-    }`}
-  >
-    <button 
-      onClick={() => setIsSidebarOpen(false)} 
-      className="absolute top-4 right-4 text-zinc-400 hover:text-white"
-    >
-      ✕
-    </button>
-    <div className="mt-8 text-xs font-mono tracking-wider text-zinc-500 font-bold">
-      OBSIDIAN ENGINE NAV
-    </div>
-    {/* Add your original sidebar navigation buttons or options here */}
-  </div>
+
 
   return (
   <div className="flex flex-col w-full min-h-screen bg-[#09090b] text-zinc-100 p-4 md:p-6 font-sans select-none antialiased">
-   {/* Collapsible Sidebar Overlay */}
-      <div 
-        className="fixed top-0 left-0 z-50 h-screen w-64 bg-[#111926] border-r border-zinc-800 p-4 transition-transform duration-300 ease-in-out"
-        style={{ transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}
+  {/* Collapsible Sidebar Overlay */}
+     <div className="fixed top-0 left-0 h-screen w-64 bg-[#111926] border-r border-zinc-800 p-4 transition-all duration-300 ease-in-out"
+        style={{ 
+          transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+          zIndex: 9999,
+          visibility: isSidebarOpen ? 'visible' : 'hidden',
+          opacity: isSidebarOpen ? 1 : 0
+        }}
       >
         <button 
           onClick={() => setIsSidebarOpen(false)} 
-          className="absolute top-4 right-4 text-zinc-400 hover:text-white"
+          className="absolute top-4 right-4 text-zinc-400 hover:text-white font-bold p-1 text-base"
         >
           ✕
         </button>
