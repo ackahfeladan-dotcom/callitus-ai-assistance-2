@@ -172,12 +172,12 @@ export default function ChatComponent() {
       <div className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-4">
         <div className="flex items-center gap-3">
           <div className="h-3 w-3 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_12px_rgba(34,211,238,0.5)]" />
-          <button 
-          
-              className="p-1.5 mr-2 text-zinc-400 hover:text-white rounded bg-zinc-900 border border-zinc-800 text-xs"
->
-              ☰
-         </button>
+ <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="relative z-[99999] p-1.5 mr-2 text-zinc-400 hover:text-white rounded bg-zinc-900 border border-zinc-800 text-sm"
+        >
+          ☰
+        </button>
           <h1 className="text-sm font-semibold tracking-wider uppercase text-zinc-400">Obsidian AI Engine v1.0</h1>
         </div>
         
