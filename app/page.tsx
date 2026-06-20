@@ -20,6 +20,7 @@ export default function ChatComponent() {
   const [attachedText, setAttachedText] = useState('');
   const [fileName, setFileName] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
@@ -149,6 +150,60 @@ export default function ChatComponent() {
 
   return (
   <div className="flex flex-col w-full min-h-screen bg-[#09090b] text-zinc-100 p-4 md:p-6 font-sans select-none antialiased">
+   {/* Slide-out Library Context Panel */}
+      <div 
+        className="fixed top-0 right-0 h-screen w-80 bg-[#0d0d0d] border-l border-zinc-800/60 p-5 flex flex-col justify-between transition-all duration-300 ease-in-out font-sans"
+        style={{ 
+          transform: isLibraryOpen ? 'translateX(0)' : 'translateX(100%)',
+          zIndex: 9998,
+          visibility: isLibraryOpen ? 'visible' : 'hidden',
+          opacity: isLibraryOpen ? 1 : 0
+        }}
+      >
+        <div>
+          {/* HEADER SECTOR */}
+          <div className="flex items-center justify-between border-b border-zinc-800/50 pb-3 mb-4">
+            <div className="flex items-center gap-2">
+              <svg className="text-cyan-500" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              <span className="text-xs font-mono tracking-widest text-zinc-300 font-bold uppercase">System Knowledge Library</span>
+            </div>
+            <button 
+              onClick={() => setIsLibraryOpen(false)} 
+              className="p-1 hover:bg-zinc-800/50 rounded text-zinc-500 hover:text-zinc-200 transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* ASSET UPLOAD DROP ZONE */}
+          <div className="border border-dashed border-zinc-800 hover:border-cyan-800/60 transition-colors rounded-xl p-4 text-center cursor-pointer mb-5 bg-[#121212]/40 group">
+            <span className="text-zinc-500 text-xs block mb-1 group-hover:text-zinc-400">Drag or drop document assets</span>
+            <span className="text-[10px] text-zinc-600 font-mono">PDF, TXT, JSON, MD</span>
+          </div>
+
+          {/* SAVED DOCUMENTS LIST LOG */}
+          <div className="space-y-2">
+            <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider block mb-1">Index Core Nodes</span>
+            
+            <div className="p-2.5 bg-zinc-900/40 border border-zinc-800/40 rounded-lg hover:border-zinc-700 transition-all cursor-pointer flex flex-col gap-1">
+              <span className="text-xs text-zinc-300 font-medium truncate">system_architecture_spec.json</span>
+              <span className="text-[9px] font-mono text-zinc-600">UPLOADED: 24_MAY_2026 • 12.4KB</span>
+            </div>
+
+            <div className="p-2.5 bg-zinc-900/40 border border-zinc-800/40 rounded-lg hover:border-zinc-700 transition-all cursor-pointer flex flex-col gap-1">
+              <span className="text-xs text-zinc-300 font-medium truncate">neural_weight_embeddings.md</span>
+              <span className="text-[9px] font-mono text-zinc-600">UPLOADED: 02_JUN_2026 • 4.1KB</span>
+            </div>
+          </div>
+        </div>
+
+        {/* BOTTOM STATISTICS STATUS GAUGE */}
+        <div className="border-t border-zinc-800/40 pt-3 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+          <span>STORAGE CAPACITY</span>
+          <span className="text-zinc-400">16.5 KB / 100 MB</span>
+        </div>
+      </div>
+
  {/* Collapsible Sidebar Overlay */}
       <div 
         className="fixed top-0 left-0 h-screen w-68 bg-[#0d0d0d] border-r border-zinc-800/40 p-3.5 flex flex-col justify-between transition-all duration-300 ease-in-out font-sans text-zinc-200"
@@ -210,7 +265,13 @@ export default function ChatComponent() {
               )}
             </div>
             
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group">
+           <button 
+              onClick={() => {
+                setIsLibraryOpen(true);
+                setIsSidebarOpen(false);
+              }}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group"
+            >
               <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
               <span>Library</span>
             </button>
