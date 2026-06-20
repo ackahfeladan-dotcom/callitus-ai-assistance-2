@@ -164,13 +164,28 @@ export default function ChatComponent() {
 
   return (
   <div className="flex flex-col w-full min-h-screen bg-[#09090b] text-zinc-100 p-4 md:p-6 font-sans select-none antialiased">
-      
+   {/* Collapsible Sidebar Overlay */}
+      <div 
+        className="fixed top-0 left-0 z-50 h-screen w-64 bg-[#111926] border-r border-zinc-800 p-4 transition-transform duration-300 ease-in-out"
+        style={{ transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}
+      >
+        <button 
+          onClick={() => setIsSidebarOpen(false)} 
+          className="absolute top-4 right-4 text-zinc-400 hover:text-white"
+        >
+          ✕
+        </button>
+        <div className="mt-8 text-xs font-mono tracking-wider text-zinc-500 font-bold">
+          OBSIDIAN ENGINE NAV
+        </div>
+      </div>
+
       {/* App Header */}
       <div className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-4">
         <div className="flex items-center gap-3">
           <div className="h-3 w-3 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_12px_rgba(34,211,238,0.5)]" />
           <button 
-            onClick={() => setIsSidebarOpen(true)} 
+          
               className="p-1.5 mr-2 text-zinc-400 hover:text-white rounded bg-zinc-900 border border-zinc-800 text-xs"
 >
               ☰
