@@ -162,7 +162,7 @@ export default function ChatComponent() {
         {/* TOP SECTION: LOGO & NAVIGATION LIST */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-semibold tracking-wide text-zinc-100 pl-1">ChatGPT</span>
+            <span className="text-sm font-semibold tracking-wide text-zinc-100 pl-1">CALLITUS</span>
            <button 
             onClick={() => setIsSidebarOpen(false)} 
             aria-label="Close sidebar"
