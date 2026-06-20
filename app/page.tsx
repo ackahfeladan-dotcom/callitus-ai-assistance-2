@@ -13,7 +13,7 @@ interface LocalMessage {
 
 export default function ChatComponent() {
   const router = useRouter();
-  const [userChecked, setUserChecked] = useState(false);
+  const [userChecked, setUserChecked] = useState(true);
   const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
