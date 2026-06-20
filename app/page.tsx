@@ -148,8 +148,9 @@ export default function ChatComponent() {
 
   return (
   <div className="flex flex-col w-full min-h-screen bg-[#09090b] text-zinc-100 p-4 md:p-6 font-sans select-none antialiased">
-  {/* Collapsible Sidebar Overlay */}
-     <div className="fixed top-0 left-0 h-screen w-64 bg-[#111926] border-r border-zinc-800 p-4 transition-all duration-300 ease-in-out"
+ {/* Collapsible Sidebar Overlay */}
+      <div 
+        className="fixed top-0 left-0 h-screen w-68 bg-[#0d0d0d] border-r border-zinc-800/40 p-3.5 flex flex-col justify-between transition-all duration-300 ease-in-out font-sans text-zinc-200"
         style={{ 
           transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
           zIndex: 9999,
@@ -157,15 +158,90 @@ export default function ChatComponent() {
           opacity: isSidebarOpen ? 1 : 0
         }}
       >
-        <button 
-          onClick={() => setIsSidebarOpen(false)} 
-          className="absolute top-4 right-4 text-zinc-400 hover:text-white font-bold p-1 text-base"
-        >
-          ✕
-        </button>
-        <div className="mt-8 text-xs font-mono tracking-wider text-zinc-500 font-bold">
-          OBSIDIAN ENGINE NAV
+        {/* TOP SECTION: LOGO & NAVIGATION LIST */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-semibold tracking-wide text-zinc-100 pl-1">ChatGPT</span>
+           <button 
+            onClick={() => setIsSidebarOpen(false)} 
+            aria-label="Close sidebar"
+            className="p-1.5 hover:bg-zinc-800/50 rounded-lg text-zinc-400 hover:text-zinc-200 transition-colors"
+          >
+              <svg xmlns="http://w3.org" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+
+          {/* NEW CHAT BUTTON */}
+          <button 
+            onClick={() => {
+              /* Optional: Add clear script action here */
+              setIsSidebarOpen(false);
+            }}
+            aria-label="New chat"
+            className="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-[#171717] border border-zinc-800/40 text-sm font-medium text-zinc-100 transition-colors mb-6 group"
+          >
+            <span>New chat</span>
+            <svg className="text-zinc-500 group-hover:text-zinc-300 transition-colors" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </button>
+
+          {/* MAIN NAV ITEM LIST (CLEAN TECH ICONS) */}
+          <nav className="space-y-0.5 text-sm font-normal text-zinc-300">
+            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group">
+              <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <span>Search chats</span>
+            </button>
+            
+            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group">
+              <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              <span>Library</span>
+            </button>
+            
+            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group">
+              <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+              <span>Projects</span>
+            </button>
+            
+            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group">
+              <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              <span>Explore GPTs</span>
+            </button>
+            
+            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group">
+              <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              <span>Codex</span>
+            </button>
+          </nav>
+
+          {/* RECENTS TIMELINE LOG */}
+          <div className="mt-7 px-3">
+            <div className="flex items-center justify-between text-xs font-semibold text-zinc-500 tracking-wide">
+              <span>Recent Chats</span>
+              <svg xmlns="http://w3.org" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+            <div className="mt-3 text-xs text-zinc-400 space-y-2.5">
+              <p className="hover:text-zinc-200 cursor-pointer truncate pl-0.5">Obsidian System Workspace Initialization</p>
+              <p className="hover:text-zinc-200 cursor-pointer truncate pl-0.5">Database User Session Management</p>
+            </div>
+          </div>
         </div>
+
+        {/* BOTTOM SECTION: PREMIUM USER PROFILE ACTION */}
+        <div className="border-t border-zinc-800/40 pt-3.5 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-[#3b82f6] to-[#8b5cf6] flex items-center justify-center text-[11px] font-bold text-white shadow">
+              WC
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-xs font-medium text-zinc-200 leading-none mb-0.5">Wek Callitus</span>
+              <span className="text-[10px] text-zinc-500 font-mono">NODE_USER_FREE</span>
+            </div>
+          </div>
+          
+          <button className="bg-zinc-900 border border-zinc-800/60 hover:bg-zinc-800 text-zinc-200 text-[11px] font-medium px-3 py-1 rounded-full transition-colors">
+            Upgrade
+          </button>
+        </div>
+
       </div>
 
       {/* App Header */}
