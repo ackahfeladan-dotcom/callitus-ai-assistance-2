@@ -233,6 +233,7 @@ export default function ChatComponent() {
             onClick={() => {
               setMessages([]);
               setIsSidebarOpen(false);
+               setCurrentView('chat');
             }}
             aria-label="New chat"
             className="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-[#171717] border border-zinc-800/40 text-sm font-medium text-zinc-100 transition-colors mb-6 group"
