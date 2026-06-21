@@ -22,6 +22,7 @@ export default function ChatComponent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState<boolean>(false);
   const [activeModel, setActiveModel] = useState<string>('Default Assistant');
   const [currentView, setCurrentView] = useState<'chat' | 'projects' | 'explore' | 'codex'>('chat');
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
@@ -424,12 +425,49 @@ export default function ChatComponent() {
         <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded-xl p-8 bg-zinc-900/20 text-center">
           <span className="text-2xl opacity-40 mb-2">📁</span>
           <p className="text-xs text-zinc-400">No active projects found</p>
-          <button className="mt-4 text-xs bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-md transition-colors">
+          <button onClick={() => setIsNewProjectModalOpen(true)} className="mt-4 text-xs bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-md transition-colors">
             Create New Project
           </button>
         </div>
-      </div>
-    )}
+      
+    {/* Create New Project Modal Popup Overlay */}
+      {isNewProjectModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0E131F] border border-zinc-800 w-full max-w-sm rounded-xl p-5 shadow-2xl">
+            <h3 className="text-sm font-semibold text-white mb-1">📁 Initialize Data Project</h3>
+            <p className="text-[11px] text-zinc-500 mb-4">Assign a clean namespace identifier to separate your data nodes.</p>
+            
+            <input 
+              type="text" 
+              placeholder="Project workspace title..." 
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs font-mono text-zinc-200 outline-none placeholder-zinc-700 mb-4 focus:border-cyan-800/80 transition-colors"
+            />
+            
+            <div className="flex justify-end gap-2 text-xs font-medium">
+              <button 
+                type="button"
+                onClick={() => setIsNewProjectModalOpen(false)} 
+                className="bg-transparent hover:bg-zinc-900 border border-zinc-800 text-zinc-400 px-3 py-1.5 rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                type="button"
+                onClick={() => setIsNewProjectModalOpen(false)} 
+                className="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-md transition-colors"
+              >
+                Initialize Folder
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+  )
+}
+    
+
     {/* EXPLORE GPTS VIEW CONTAINER */}
 {currentView === 'explore' && (
   <div className="flex flex-col h-full text-zinc-200 p-4">
