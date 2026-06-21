@@ -422,24 +422,56 @@ export default function ChatComponent() {
   </div>
 
       {/* File Attachment Status Indicator */}
-      {fileName && (
-        <div className="mb-3 p-2.5 bg-cyan-950/30 border border-cyan-800/50 rounded-xl text-xs text-cyan-400 flex justify-between items-center shadow-[0_0_10px_rgba(34,211,238,0.05)]">
-          <span className="flex items-center gap-2 font-mono">📎 ATTACHED_NODE: <strong>{fileName}</strong></span>
-          <button onClick={() => { setFileName(''); setAttachedText(''); }} className="hover:text-cyan-200 bg-cyan-900/30 p-1 rounded-md border border-cyan-700/30">✕</button>
-        </div>
-      )}
-
-      {/* User Input Entry Dock */}
-     <form onSubmit={handleSubmit} className="w-full flex items-center gap-2 bg-[#0E131F]/90 backdrop-blur-md p-2 md:p-3 border border-slate-800/80 rounded-xl md:rounded-2xl shadow-xl focus-within:border-cyan-500/40 transition-all">
-        <label className="cursor-pointer p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-cyan-400" title="Attach file">
-          <span className="text-lg">📎</span>
-          <input type="file" accept=".txt,.js,.ts,.tsx,.json,.csv,.md" className="hidden" onChange={handleFileUpload} disabled={loading} />
-        </label>
-        <input className="flex-1 px-2 py-2 text-xs font-mono text-zinc-200 outline-none bg-transparent placeholder-zinc-600" value={input} placeholder={fileName ? "Input variables regarding this file..." : "Compile a new query script or attach file..."} onChange={(e) => setInput(e.target.value)} disabled={loading} />
-        <button type="submit" disabled={loading || (!input.trim() && !attachedText)} className="bg-zinc-100 text-zinc-950 text-xs font-mono font-bold px-4 py-2.5 rounded-lg hover:bg-zinc-200 active:scale-95 transition-all duration-200 disabled:opacity-20 disabled:pointer-events-none shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-          {loading ? 'RUNNING...' : 'EXECUTE'}
+  {currentView === 'chat' && fileName && (
+    <div className="mb-3 p-2.5 bg-cyan-950/50 border border-cyan-800/50 rounded-xl text-xs text-cyan-200">
+      <div className="flex items-center justify-between w-full font-mono">
+        <span className="flex items-center gap-2">
+          <svg className="text-cyan-400" xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          NODE_ATTACHED: <strong className="text-white font-semibold">{fileName}</strong>
+        </span>
+        <button 
+          type="button" 
+          onClick={() => { setFileName(''); setAttachedText(''); }} 
+          className="text-cyan-400/70 hover:text-red-400 transition-colors flex items-center gap-1 text-[11px]"
+        >
+          <span>✕</span> Remove
         </button>
-      </form>
+      </div>
+    </div>
+  )}
+
+  {/* User Input Entry Dock */}
+  {currentView === 'chat' && (
+    <form onSubmit={handleSubmit} className="w-full flex items-center gap-2 bg-[#0E131F]/90 backdrop-blur border border-zinc-800/60 rounded-xl p-2 shadow-xl">
+      <label className="cursor-pointer p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 transition-colors flex items-center justify-center">
+        <svg xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-400 hover:text-zinc-200 transition-colors"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+ <input 
+  id="file-upload-input"
+  aria-label="Upload document attachment"
+  type="file" 
+  accept=".txt,.js,.ts,.tsx,.json,.csv,.md" 
+  className="hidden" 
+  onChange={handleFileUpload} 
+/>
+      </label>
+
+      <input 
+        type="text"
+        value={input}
+       onChange={(e) => setInput(e.target.value)}
+        placeholder="Prompt or attach file..." 
+        className="flex-1 px-2 py-2 text-xs font-mono text-zinc-200 outline-none bg-transparent placeholder-zinc-600" 
+      />
+
+      <button 
+        type="submit" 
+        disabled={loading || (!input.trim() && !attachedText)} 
+        className="bg-zinc-800 hover:bg-zinc-700 text-white text-xs px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-40 disabled:hover:bg-zinc-800"
+      >
+        {loading ? 'RUNNING...' : 'EXECUTE'}
+      </button>
+    </form>
+  )}
       <div ref={messagesEndRef} />
     </div>
   );
