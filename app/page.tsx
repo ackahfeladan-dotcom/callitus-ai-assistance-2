@@ -22,6 +22,7 @@ export default function ChatComponent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentView, setCurrentView] = useState<'chat' | 'projects'>('chat');
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -276,11 +277,15 @@ export default function ChatComponent() {
               <span>Library</span>
             </button>
             
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group">
-              <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-              <span>Projects</span>
-            </button>
-            
+<button 
+  onClick={() => setCurrentView('projects')}
+  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+    currentView === 'projects' ? 'bg-zinc-800 text-white' : 'hover:bg-[#171717] text-zinc-400'
+  }`}
+>
+  <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+  <span>Projects</span>
+</button>
             <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group">
               <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
               <span>Explore GPTs</span>
@@ -366,32 +371,55 @@ export default function ChatComponent() {
         </div>
       </div>
       
-      {/* Workspace Terminal View */}
-      <div className="flex-1 overflow-y-auto space-y-6 mb-4 p-4 border border-zinc-800/80 rounded-2xl bg-[#0c0c0e] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
+   {/* Workspace Terminal View */}
+  <div className="flex-1 overflow-y-auto space-y-6 mb-4 p-4 border border-zinc-800/80 rounded-2xl">
+    
+    {currentView === 'chat' && (
+      <>
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center mt-12">
             <span className="text-3xl mb-3 opacity-50">⚡</span>
             <p className="text-zinc-500 text-sm max-w-sm leading-relaxed">
-              Workspace initialized. Upload a text or code document or type a query below to prompt the neural model.
+              Workspace Initialized. Upload a text or code document or type a query below to prompt the neural model.
             </p>
           </div>
         )}
+
         {messages.map((m) => (
           <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-md leading-relaxed ${
-              m.role === 'user' 
-                ? 'bg-zinc-900 border border-zinc-700/50 text-zinc-100 font-medium' 
-                : 'bg-zinc-950 border border-cyan-950/60 text-zinc-300 shadow-[0_0_15px_rgba(0,0,0,0.2)]'
+              m.role === 'user'
+                ? 'bg-zinc-900 border border-zinc-700/50 text-zinc-100 font-medium'
+                : 'bg-zinc-950 border border-cyan-950/60 text-zinc-300 shadow-[0_0_15px_rgba(0,0,0,0.4)]'
             }`}>
-       
-              
-              <div className="prose prose-invert max-w-none font-sans text-sm md:text-base text-zinc-100 font-medium leading-relaxed space-y-3 selection:bg-cyan-500/30">
-  <ReactMarkdown>{m.content}</ReactMarkdown>
-</div>
+              <div className="prose prose-invert max-w-none font-sans text-sm md:text-base text-zinc-300">
+                <ReactMarkdown>{m.content}</ReactMarkdown>
+              </div>
             </div>
           </div>
         ))}
+      </>
+    )}
+
+    {/* PROJECTS VIEW CONTAINER */}
+    {currentView === 'projects' && (
+      <div className="flex flex-col h-full text-zinc-200 p-4">
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-white">📁 Projects Workspace</h2>
+          <p className="text-xs text-zinc-500 mt-1">Manage, organize, and view your uploaded data modules.</p>
+        </div>
+        
+        <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded-xl p-8 bg-zinc-900/20 text-center">
+          <span className="text-2xl opacity-40 mb-2">📁</span>
+          <p className="text-xs text-zinc-400">No active projects found</p>
+          <button className="mt-4 text-xs bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-md transition-colors">
+            Create New Project
+          </button>
+        </div>
       </div>
+    )}
+
+  </div>
 
       {/* File Attachment Status Indicator */}
       {fileName && (
