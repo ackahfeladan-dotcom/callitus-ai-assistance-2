@@ -22,7 +22,7 @@ export default function ChatComponent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentView, setCurrentView] = useState<'chat' | 'projects'>('chat');
+  const [currentView, setCurrentView] = useState<'chat' | 'projects' | 'explore'>('chat');
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -419,7 +419,60 @@ export default function ChatComponent() {
         </div>
       </div>
     )}
+    {/* EXPLORE GPTS VIEW CONTAINER */}
+{currentView === 'explore' && (
+  <div className="flex flex-col h-full text-zinc-200 p-4">
+    
+    {/* Layout Header with Close Button */}
+    <div className="mb-6 flex justify-between items-start">
+      <div>
+        <h2 className="text-lg font-semibold text-white">🧭 Explore GPTs</h2>
+        <p className="text-xs text-zinc-500 mt-1">Discover custom, specialized modules configured for unique technical operations.</p>
+      </div>
+      <button 
+        onClick={() => setCurrentView('chat')}
+        className="text-xs font-mono bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:text-white px-3 py-1.5 rounded-lg text-zinc-400 transition-all flex items-center gap-1.5 shadow-md"
+      >
+        <span>✕</span> Close
+      </button>
+    </div>
 
+    {/* Models Grid Selector */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1 overflow-y-auto">
+      
+      {/* Card 1: Code Wizard */}
+      <div className="border border-zinc-800/80 bg-zinc-900/10 p-4 rounded-xl hover:border-cyan-800/50 hover:bg-cyan-950/5 transition-all cursor-pointer group flex flex-col justify-between">
+        <div>
+          <span className="text-xl block mb-2 group-hover:scale-110 transition-transform w-fit">💻</span>
+          <h3 className="text-sm font-semibold text-zinc-100">Code Specialist</h3>
+          <p className="text-[11px] text-zinc-500 mt-1 leading-relaxed">Debug scripts, refactor complex blocks, and build robust system architectures.</p>
+        </div>
+        <span className="text-[10px] text-cyan-400 font-mono mt-4 block">Activate Agent →</span>
+      </div>
+
+      {/* Card 2: Data Analyst */}
+      <div className="border border-zinc-800/80 bg-zinc-900/10 p-4 rounded-xl hover:border-purple-800/50 hover:bg-purple-950/5 transition-all cursor-pointer group flex flex-col justify-between">
+        <div>
+          <span className="text-xl block mb-2 group-hover:scale-110 transition-transform w-fit">📊</span>
+          <h3 className="text-sm font-semibold text-zinc-100">Data Module Analyst</h3>
+          <p className="text-[11px] text-zinc-500 mt-1 leading-relaxed">Parse CSV files, format structured JSON outputs, and compute mathematical data points.</p>
+        </div>
+        <span className="text-[10px] text-purple-400 font-mono mt-4 block">Activate Agent →</span>
+      </div>
+
+      {/* Card 3: System Prompt Architect */}
+      <div className="border border-zinc-800/80 bg-zinc-900/10 p-4 rounded-xl hover:border-amber-800/50 hover:bg-amber-950/5 transition-all cursor-pointer group flex flex-col justify-between">
+        <div>
+          <span className="text-xl block mb-2 group-hover:scale-110 transition-transform w-fit">⚙️</span>
+          <h3 className="text-sm font-semibold text-zinc-100">Prompt Architect</h3>
+          <p className="text-[11px] text-zinc-500 mt-1 leading-relaxed">Optimize engineering rulesets, inject custom system tokens, and refine persona constraints.</p>
+        </div>
+        <span className="text-[10px] text-amber-400 font-mono mt-4 block">Activate Agent →</span>
+      </div>
+
+    </div>
+  </div>
+)}
   </div>
 
       {/* File Attachment Status Indicator */}
