@@ -22,7 +22,8 @@ export default function ChatComponent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentView, setCurrentView] = useState<'chat' | 'projects' | 'explore'>('chat');
+  const [activeModel, setActiveModel] = useState<string>('Default Assistant');
+  const [currentView, setCurrentView] = useState<'chat' | 'projects' | 'explore' | 'codex'>('chat');
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -287,16 +288,25 @@ export default function ChatComponent() {
   <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
   <span>Projects</span>
 </button>
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group">
-              <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-              <span>Explore GPTs</span>
-            </button>
-            
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#171717] transition-colors text-left group">
-              <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-              <span>Codex</span>
-            </button>
-          </nav>
+       <button 
+  onClick={() => setCurrentView('explore')}
+  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+    currentView === 'explore' ? 'bg-zinc-800 text-white' : 'hover:bg-[#171717] text-zinc-400'
+  }`}
+>
+  <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+  <span>Explore GPTs</span>
+</button>
+   <button 
+  onClick={() => setCurrentView('codex')}
+  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+    currentView === 'codex' ? 'bg-zinc-800 text-white' : 'hover:bg-[#171717] text-zinc-400'
+  }`}
+>
+  <svg className="text-zinc-500 group-hover:text-zinc-300" xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+  <span>Codex</span>
+</button>
+</nav>
 
           {/* RECENTS TIMELINE LOG */}
           <div className="mt-7 px-3">
@@ -378,12 +388,13 @@ export default function ChatComponent() {
     {currentView === 'chat' && (
       <>
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center mt-12">
-            <span className="text-3xl mb-3 opacity-50">⚡</span>
-            <p className="text-zinc-500 text-sm max-w-sm leading-relaxed">
-              Workspace Initialized. Upload a text or code document or type a query below to prompt the neural model.
-            </p>
-          </div>
+          <div className="flex flex-col items-center justify-center text-center mt-12">
+  <span className="text-3xl mb-3 opacity-50">⚡</span>
+  <p className="text-zinc-500 text-xs max-w-sm leading-relaxed">
+    Workspace Initialized. Active System Engine: <strong className="text-cyan-400 font-mono font-semibold">{activeModel}</strong>. 
+    Upload a text or code document or type a query below to prompt the neural model.
+  </p>
+</div>
         )}
 
         {messages.map((m) => (
@@ -437,11 +448,17 @@ export default function ChatComponent() {
       </button>
     </div>
 
-    {/* Models Grid Selector */}
+   {/* Models Grid Selector */}
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1 overflow-y-auto">
       
       {/* Card 1: Code Wizard */}
-      <div className="border border-zinc-800/80 bg-zinc-900/10 p-4 rounded-xl hover:border-cyan-800/50 hover:bg-cyan-950/5 transition-all cursor-pointer group flex flex-col justify-between">
+      <div 
+        onClick={() => {
+          setActiveModel('Code Specialist');
+          setCurrentView('chat');
+        }}
+        className="border border-zinc-800/80 bg-zinc-900/10 p-4 rounded-xl hover:border-cyan-800/50 hover:bg-cyan-950/5 transition-all cursor-pointer group flex flex-col justify-between"
+      >
         <div>
           <span className="text-xl block mb-2 group-hover:scale-110 transition-transform w-fit">💻</span>
           <h3 className="text-sm font-semibold text-zinc-100">Code Specialist</h3>
@@ -451,7 +468,13 @@ export default function ChatComponent() {
       </div>
 
       {/* Card 2: Data Analyst */}
-      <div className="border border-zinc-800/80 bg-zinc-900/10 p-4 rounded-xl hover:border-purple-800/50 hover:bg-purple-950/5 transition-all cursor-pointer group flex flex-col justify-between">
+      <div 
+        onClick={() => {
+          setActiveModel('Data Module Analyst');
+          setCurrentView('chat');
+        }}
+        className="border border-zinc-800/80 bg-zinc-900/10 p-4 rounded-xl hover:border-purple-800/50 hover:bg-purple-950/5 transition-all cursor-pointer group flex flex-col justify-between"
+      >
         <div>
           <span className="text-xl block mb-2 group-hover:scale-110 transition-transform w-fit">📊</span>
           <h3 className="text-sm font-semibold text-zinc-100">Data Module Analyst</h3>
@@ -460,8 +483,15 @@ export default function ChatComponent() {
         <span className="text-[10px] text-purple-400 font-mono mt-4 block">Activate Agent →</span>
       </div>
 
+    
       {/* Card 3: System Prompt Architect */}
-      <div className="border border-zinc-800/80 bg-zinc-900/10 p-4 rounded-xl hover:border-amber-800/50 hover:bg-amber-950/5 transition-all cursor-pointer group flex flex-col justify-between">
+        <div 
+        onClick={() => {
+          setActiveModel('Prompt Architect');
+          setCurrentView('chat');
+        }}
+        className="border border-zinc-800/80 bg-zinc-900/10 p-4 rounded-xl hover:border-amber-800/50 hover:bg-amber-950/5 transition-all cursor-pointer group flex flex-col justify-between"
+      >
         <div>
           <span className="text-xl block mb-2 group-hover:scale-110 transition-transform w-fit">⚙️</span>
           <h3 className="text-sm font-semibold text-zinc-100">Prompt Architect</h3>
@@ -474,6 +504,61 @@ export default function ChatComponent() {
   </div>
 )}
   </div>
+ {/* CODEX CODE INTERPRETER VIEW CONTAINER */}
+{currentView === 'codex' && (
+  <div className="flex flex-col h-full text-zinc-200 p-4">
+    
+    {/* Layout Top Header Row */}
+    <div className="mb-6 flex justify-between items-start">
+      <div>
+        <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+          <span>💻</span> Codex Terminal Playground
+        </h2>
+        <p className="text-xs text-zinc-500 mt-1">Compile blocks, refactor variables, and run real-time execution routines.</p>
+      </div>
+      <button 
+        onClick={() => setCurrentView('chat')}
+        className="text-xs font-mono bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:text-white px-3 py-1.5 rounded-lg text-zinc-400 transition-all flex items-center gap-1.5 shadow-md"
+      >
+        <span>✕</span> Close
+      </button>
+    </div>
+
+    {/* Split Screen Workbench Layout */}
+    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[300px]">
+      
+      {/* Left Input: Clean Editor Mockup */}
+      <div className="border border-zinc-800 bg-[#070A12]/60 rounded-xl p-4 flex flex-col font-mono text-xs">
+        <div className="text-zinc-500 mb-2 border-b border-zinc-800/80 pb-2 flex justify-between items-center">
+          <span>📄 main_module.py</span>
+          <span className="text-[10px] text-zinc-600 bg-zinc-900 px-2 py-0.5 rounded">Python 3.10</span>
+        </div>
+        <textarea 
+          placeholder="# Paste or draft your engineering script algorithms here..." 
+          className="flex-1 bg-transparent text-zinc-300 outline-none resize-none leading-relaxed placeholder-zinc-700 font-mono text-xs"
+        />
+        <div className="flex justify-end mt-2">
+          <button className="bg-cyan-600 hover:bg-cyan-500 text-white font-semibold px-4 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-xs shadow-lg shadow-cyan-950/20">
+            <span>▶️</span> EXECUTE CODE
+          </button>
+        </div>
+      </div>
+
+      {/* Right Output: Isolated Sandbox Log */}
+      <div className="border border-zinc-800 bg-black/40 rounded-xl p-4 flex flex-col font-mono text-xs">
+        <div className="text-zinc-500 mb-2 border-b border-zinc-800/80 pb-2 flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>SYSTEM_COMPILER_LOG: READY</span>
+        </div>
+        <div className="flex-1 text-zinc-600 italic select-none flex flex-col items-center justify-center text-center p-4">
+          <p className="text-[11px] font-mono not-italic text-zinc-500">No logs generated yet.</p>
+          <p className="text-[10px] text-zinc-600 mt-1 max-w-[200px]">Hit execute on your workbench container to process output logs.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+)} 
 
       {/* File Attachment Status Indicator */}
   {currentView === 'chat' && fileName && (
