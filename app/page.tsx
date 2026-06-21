@@ -22,6 +22,8 @@ export default function ChatComponent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [projects, setProjects] = useState<string[]>([]);
+  const [newProjectName, setNewProjectName] = useState<string>('');
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState<boolean>(false);
   const [activeModel, setActiveModel] = useState<string>('Default Assistant');
   const [currentView, setCurrentView] = useState<'chat' | 'projects' | 'explore' | 'codex'>('chat');
@@ -422,13 +424,43 @@ export default function ChatComponent() {
           <p className="text-xs text-zinc-500 mt-1">Manage, organize, and view your uploaded data modules.</p>
         </div>
         
-        <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded-xl p-8 bg-zinc-900/20 text-center">
-          <span className="text-2xl opacity-40 mb-2">📁</span>
-          <p className="text-xs text-zinc-400">No active projects found</p>
-          <button onClick={() => setIsNewProjectModalOpen(true)} className="mt-4 text-xs bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-md transition-colors">
-            Create New Project
-          </button>
-        </div>
+       {projects.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded-xl p-8 bg-zinc-900/20 text-center">
+              <span className="text-2xl opacity-40 mb-2">📁</span>
+              <p className="text-xs text-zinc-400">No active projects found</p>
+              <button 
+                onClick={() => setIsNewProjectModalOpen(true)} 
+                className="mt-4 text-xs bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-md transition-colors"
+              >
+                Create New Project
+              </button>
+            </div>
+          ) : (
+            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 auto-rows-max overflow-y-auto pt-2">
+              {projects.map((proj, idx) => (
+                <div key={idx} className="border border-zinc-800/80 bg-[#0E131F]/40 p-4 rounded-xl flex flex-col justify-between hover:border-zinc-700 hover:bg-zinc-900/20 transition-all cursor-pointer group">
+                  <div className="flex items-start gap-3">
+                    <span className="text-xl group-hover:scale-110 transition-transform">📁</span>
+                    <div>
+                      <h4 className="text-xs font-semibold text-zinc-200 group-hover:text-white font-mono break-all">{proj}</h4>
+                      <p className="text-[10px] text-zinc-600 font-mono mt-0.5">status: active_node</p>
+                    </div>
+                  </div>
+                  <div className="mt-5 pt-2 border-t border-zinc-900 flex justify-between items-center text-[10px] text-zinc-500 font-mono">
+                    <span>Files: 0</span>
+                    <span className="text-cyan-500/70 opacity-0 group-hover:opacity-100 transition-opacity">Open Workspace →</span>
+                  </div>
+                </div>
+              ))}
+              
+              <div 
+                onClick={() => setIsNewProjectModalOpen(true)}
+                className="border border-dashed border-zinc-800 hover:border-zinc-700 bg-transparent rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group min-h-[105px]"
+              >
+                <span className="text-zinc-600 group-hover:text-zinc-400 font-mono text-xs">+ New Namespace</span>
+              </div>
+            </div>
+          )}
       
     {/* Create New Project Modal Popup Overlay */}
       {isNewProjectModalOpen && (
@@ -436,29 +468,39 @@ export default function ChatComponent() {
           <div className="bg-[#0E131F] border border-zinc-800 w-full max-w-sm rounded-xl p-5 shadow-2xl">
             <h3 className="text-sm font-semibold text-white mb-1">📁 Initialize Data Project</h3>
             <p className="text-[11px] text-zinc-500 mb-4">Assign a clean namespace identifier to separate your data nodes.</p>
-            
-            <input 
-              type="text" 
-              placeholder="Project workspace title..." 
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs font-mono text-zinc-200 outline-none placeholder-zinc-700 mb-4 focus:border-cyan-800/80 transition-colors"
-            />
-            
-            <div className="flex justify-end gap-2 text-xs font-medium">
-              <button 
-                type="button"
-                onClick={() => setIsNewProjectModalOpen(false)} 
-                className="bg-transparent hover:bg-zinc-900 border border-zinc-800 text-zinc-400 px-3 py-1.5 rounded-md transition-colors"
-              >
-                Cancel
-              </button>
-              <button 
-                type="button"
-                onClick={() => setIsNewProjectModalOpen(false)} 
-                className="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-md transition-colors"
-              >
-                Initialize Folder
-              </button>
-            </div>
+           <input 
+  type="text" 
+  value={newProjectName}
+  onChange={(e) => setNewProjectName(e.target.value)}
+  placeholder="Project workspace title..." 
+  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs font-mono text-zinc-200 outline-none placeholder-zinc-700 mb-4 focus:border-cyan-800/80 transition-colors"
+/>
+
+<div className="flex justify-end gap-2 text-xs font-medium">
+  <button 
+    type="button"
+    onClick={() => {
+      setIsNewProjectModalOpen(false);
+      setNewProjectName('');
+    }} 
+    className="bg-transparent hover:bg-zinc-900 border border-zinc-800 text-zinc-400 px-3 py-1.5 rounded-md transition-colors"
+  >
+    Cancel
+  </button>
+  <button 
+    type="button"
+    onClick={() => {
+      if (newProjectName.trim()) {
+        setProjects([...projects, newProjectName.trim()]); // Save name to the local list array
+        setNewProjectName(''); // Clear input box value
+      }
+      setIsNewProjectModalOpen(false); // Close out the modal popup layout frame
+    }} 
+    className="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-md transition-colors"
+  >
+    Initialize Folder
+  </button>
+</div>
           </div>
         </div>
       )}
