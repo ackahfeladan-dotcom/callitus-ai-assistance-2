@@ -37,7 +37,7 @@ export async function GET(req: Request) {
     }
 
     const { data: messages, error } = await supabase
-      .from('messages')
+      .from('chat_history')
       .select('*')
       .eq('chat_id', chatId)
       .order('created_at', { ascending: true });

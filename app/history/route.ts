@@ -10,7 +10,7 @@ export async function GET() {
   try {
     // Queries your chat sessions table (assumes your table name is 'chats')
     const { data: chats, error } = await supabase
-      .from('chats')
+      .from('chats_history')
       .select('id, title')
       .order('updated_at', { ascending: false });
 
