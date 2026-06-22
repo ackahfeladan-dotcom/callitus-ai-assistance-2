@@ -19,6 +19,7 @@ export default function ChatComponent() {
   const [loading, setLoading] = useState(false);
   const [attachedText, setAttachedText] = useState('');
   const [fileName, setFileName] = useState('');
+  const [recentChats, setRecentChats] = useState<{ id: string; title: string }[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,10 +29,37 @@ export default function ChatComponent() {
   const [activeModel, setActiveModel] = useState<string>('Default Assistant');
   const [currentView, setCurrentView] = useState<'chat' | 'projects' | 'explore' | 'codex'>('chat');
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
-
+ const handleSelectChat = async (chatId: string) => {
+    try {
+      setLoading(true);
+      // Fetch the specific chat's messages from your API
+      const res = await fetch(`/api/chat?id=${chatId}`);
+      if (!res.ok) throw new Error("Failed to fetch chat messages");
+      
+      const data = await res.json();
+      
+      // Update your messages state (make sure this matches your messages state setter name)
+      if (data && data.messages) {
+        // Example: setMessages(data.messages);
+      }
+    } catch (error) {
+      console.error("Error loading chat:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+  async function fetchChats() {
+    const res = await fetch('/api/chat/history'); // Replace with your actual history endpoint
+    const data = await res.json();
+    if (data) setRecentChats(data);
+  }
+  fetchChats();
+}, []);
 
   // 1. Verify User Session State on window startup
   useEffect(() => {
@@ -317,24 +345,24 @@ export default function ChatComponent() {
               <span>Recent Chats</span>
               <svg xmlns="http://w3.org" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </div>
-           {/* DYNAMIC SEARCH FILTER MAP */}
-            <div className="mt-3 text-xs text-zinc-400 space-y-2.5">
-              {[
-                "Obsidian System Workspace Initialization",
-                "Database User Session Management"
-              ]
-                .filter(title => title.toLowerCase().includes(searchQuery.toLowerCase()))
-                .map((title, idx) => (
-                  <p key={idx} className="hover:text-zinc-200 cursor-pointer truncate pl-0.5">
-                    {title}
-                  </p>
-                ))}
-              
-              {searchQuery && ["Obsidian System Workspace Initialization", "Database User Session Management"].filter(title => title.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
-                <p className="text-zinc-600 italic pl-0.5 text-[11px]">No results found</p>
-              )}
-            </div>
-          </div>
+ <div className="mt-3 text-xs text-zinc-400 space-y-2.5">
+          {recentChats
+            .filter((chat) => chat.title.toLowerCase().includes(searchQuery.toLowerCase()))
+            .map((chat) => (
+              <p
+                key={chat.id}
+                onClick={() => handleSelectChat(chat.id)}
+                className="hover:text-zinc-200 cursor-pointer truncate pl-0.5"
+              >
+                {chat.title}
+              </p>
+            ))}
+
+          {searchQuery && !recentChats.some(chat => chat.title.toLowerCase().includes(searchQuery.toLowerCase())) && (
+            <p className="text-zinc-600 italic pl-0.5 text-[11px]">No results found</p>
+          )}
+        </div>
+        </div>
         </div>
 
         {/* BOTTOM SECTION: PREMIUM USER PROFILE ACTION */}
